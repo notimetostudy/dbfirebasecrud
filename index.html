@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>sampleapp</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <label>first-name</label>
+    <input type="text" id="firstnameinp" />
+    <br /><br />
+    <label>last-name</label>
+    <input type="text" id="lastnameinp" />
+    <br /><br />
+    <label>department</label>
+    <select id="dept">
+      <option value="IT">IT</option>
+      <option value="CSE">CSE</option>
+    </select>
+
+    <label>CNIC no</label>
+    <input type="number" id="cnicno" />
+    <br /><br />
+
+    <button id="add">add</button>
+    <button id="retrieve">retrieve</button>
+    <button id="update">update</button>
+    <button id="delete">delete</button>
+
+    <br /><br />
+
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        child,
+        get,
+        set,
+        update,
+        remove,
+      } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDWEMesn1rViZ0ZP0d3qM6ESbfUjMuZbzc",
+        authDomain: "samplehtmlcssjs.firebaseapp.com",
+        databaseURL:
+          "https://samplehtmlcssjs-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "samplehtmlcssjs",
+        storageBucket: "samplehtmlcssjs.appspot.com",
+        messagingSenderId: "77127444758",
+        appId: "1:77127444758:web:9b0b3f882f2ee5f040c837",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+
+      let firstnameinp = document.getElementById("firstnameinp");
+      let lastnameinp = document.getElementById("lastnameinp");
+      let dept = document.getElementById("dept");
+      let cnicno = document.getElementById("cnicno");
+
+      let add = document.getElementById("add");
+      let retrieve = document.getElementById("retrieve");
+      let updateBtn = document.getElementById("update");
+      let deleteBtn = document.getElementById("delete");
+
+      function AddData() {
+        set(ref(db, "employeeset/" + cnicno.value), {
+          name: firstnameinp.value + " " + lastnameinp.value,
+          department: dept.value,
+          cnic_number: Number(cnicno.value),
+        })
+          .then(() => {
+            alert("Added successfully");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+
+      function GetData() {
+        const dbRef = ref(db);
+        get(child(dbRef, "employeeset/" + cnicno.value))
+          .then((snapshot) => {
+            if (snapshot.exists()) {
+              firstnameinp.value = snapshot.val().name;
+              dept.value = snapshot.val().department;
+              cnicno.value = snapshot.val().cnic_number;
+            } else {
+              alert("Employee does not exist");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+
+      function UpdateData() {
+        update(ref(db, "employeeset/" + cnicno.value), {
+          name: firstnameinp.value + " " + lastnameinp.value,
+          department: dept.value,
+        })
+          .then(() => {
+            alert("Updated successfully");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+
+      function RemoveData() {
+        remove(ref(db, "employeeset/" + cnicno.value))
+          .then(() => {
+            alert("Deleted successfully");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+
+      add.addEventListener("click", AddData);
+      retrieve.addEventListener("click", GetData);
+      updateBtn.addEventListener("click", UpdateData);
+      deleteBtn.addEventListener("click", RemoveData);
+    </script>
+  </body>
+</html>
